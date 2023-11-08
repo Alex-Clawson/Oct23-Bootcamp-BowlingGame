@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController player;
     [SerializeField] private ScoreManager scoreManager;
     [SerializeField] private Pin[] pins;
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private Camera mainCamera, closeUpCamera;
 
     private bool isGamePlaying = false;
 
@@ -22,6 +24,9 @@ public class GameManager : MonoBehaviour
 
         //Get the first throw
         player.StartThrow();
+
+        mainCamera.enabled = true;
+        closeUpCamera.enabled = false;
     }
 
     public void SetNextThrow()
@@ -31,18 +36,25 @@ public class GameManager : MonoBehaviour
 
     void NextThrow()
     {
+        int fallenPins = CalculateFallenPins();
+        scoreManager.SetFrameScore(fallenPins);
+
         if(scoreManager.currentFrame == 0)
         {
-            Debug.Log($"Game over. Your total score is {scoreManager.CalculateTotalScore()}");
+            uiManager.ShowGameOver(scoreManager.CalculateTotalScore());
+            //Debug.Log($"Game over. Your total score is {scoreManager.CalculateTotalScore()}");
+            return;
         }
-        else
-        {
-            Debug.Log($"Frame {scoreManager.currentFrame} - Throw {scoreManager.currentThrow}");
-            scoreManager.SetFrameScore(CalculateFallenPins());
-            Debug.Log($"Current score : {scoreManager.CalculateTotalScore()}");
 
-            player.StartThrow();
+        int frameTotal = 0;
+        for(int i = 0; i < scoreManager.currentFrame - 1; i++)
+        {
+            frameTotal += scoreManager.GetFrameScore()[i];
+            uiManager.SetFrameTotal(i, frameTotal);
         }
+
+        SwitchCamera();
+        player.StartThrow();
     }
 
     public void ResetAllPins()
@@ -68,12 +80,10 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Total fallen pins = {count}");
         return count;
     }
-}
 
-/*private void Update()
+    public void SwitchCamera()
     {
-        if(Input.GetKey(KeyCode.Q))
-        {
-            ResetAllPins();
-        }
-    }*/
+        mainCamera.enabled = !mainCamera.enabled;
+        closeUpCamera.enabled = !closeUpCamera.enabled;
+    }
+}

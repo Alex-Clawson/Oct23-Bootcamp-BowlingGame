@@ -26,9 +26,18 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Ball entered the pit");
-        manager.SetNextThrow();
+        if (other.CompareTag("Pit"))
+        {
+            //Debug.Log("Ball entered the pit");
+            manager.SetNextThrow();
 
-        Destroy(gameObject);
+            Destroy(gameObject);
+        }
+        else if (other.CompareTag("CloseUp"))
+        {
+            //Switch the camera
+            manager.SwitchCamera();
+        }
+
     }
 }
