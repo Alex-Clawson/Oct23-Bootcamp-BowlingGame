@@ -87,3 +87,5 @@ public class GameManager : MonoBehaviour
         closeUpCamera.enabled = !closeUpCamera.enabled;
     }
 }
+
+
